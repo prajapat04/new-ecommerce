@@ -17,7 +17,7 @@ const app = express();
 
 await connectDB();
 await connectCloudinary();
-const allowedOrigins = ["http://localhost:5173", "https://new-ecommerce-blue.vercel.app"];
+const allowedOrigins = ["https://statuesque-bublanina-e0b5db.netlify.app"];
 app.get('/', (req, res) => res.send("API is Working"));
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
