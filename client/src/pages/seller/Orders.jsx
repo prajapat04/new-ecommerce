@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
+import { assets } from "../../assets/assets";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -11,7 +12,6 @@ const Orders = () => {
       const { data } = await axios.get("/api/order/seller", {
       withCredentials: true, // ✅ send cookies (token)
     });
-      console.log("Orders data:", data);
 
       if (data.success) {
         setOrders(data.orders || []);
@@ -47,7 +47,7 @@ const Orders = () => {
               <div className="flex gap-5">
                 <img
                   className="w-12 h-12 object-cover opacity-60"
-                  src={`http://localhost:5000/images/${firstImage}`}
+                  src={assets.box_icon}
                   alt="product"
                 />
 

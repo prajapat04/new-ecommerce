@@ -17,7 +17,7 @@ const app = express();
 
 await connectDB();
 await connectCloudinary();
-const allowedOrigins = ["http://localhost:5173", "https://new-ecommerce-blue.vercel.app", "https://new-ecommerce-backend-amits-projects-c91f797f.vercel.app"];
+const allowedOrigins = ["http://localhost:5173", "https://new-ecommerce-blue.vercel.app"];
 app.get('/', (req, res) => res.send("API is Working"));
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
@@ -42,7 +42,7 @@ app.use("/api/address", addressRoutes);
 const PORT=process.env.PORT || 4000;
 
 app.listen(PORT, ()=> {
-  console.log(`Server is runnig on http://localhost:${PORT}`);
+  console.log(`Server is runnig on ${PORT}`);
 
 });
 
