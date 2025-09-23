@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
-const allowedOrigins = ["https://statuesque-bublanina-e0b5db.netlify.app", "http://localhost:5173"];
+const allowedOrigins = [ "https://new-ecommerce-blue.vercel.app", "https://statuesque-bublanina-e0b5db.netlify.app", "http://localhost:5173"];
 app.get('/', (req, res) => res.send("API is Working"));
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
