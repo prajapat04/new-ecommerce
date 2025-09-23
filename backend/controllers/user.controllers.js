@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const isProduction = process.env.NODE_ENV === "production";
 //Register user : /api/user/register
 export const registerUser = async (req, res) => {
   try {
@@ -23,8 +24,8 @@ export const registerUser = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/'
     });
@@ -65,8 +66,8 @@ export const loginUser = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/'
     });
@@ -92,10 +93,17 @@ export const loginUser = async (req, res) => {
 
 export const isAuthUser = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-password");
-     if (!user) {
-            return res.json({ success: false, message: "User not found" });
-        }
+//    const user = await User.findById(req.userId).select("-password");
+  //   if (!user) {
+    //        return res.json({ success: false, message: "User not found" });
+      //  }
+     const token = req.cookies.token;
+    if (!token) return res.json({ success: false, message: "Not authenticated" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) return res.json({ success: false, message: "User not found" });
+
     res.json({ success: true, user });
   } catch (error) {
     console.log(error.message);
@@ -108,8 +116,8 @@ export const logoutUser = async (req, res) => {
   try {
     res.clearCookie('token', {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
       path: '/'
     });
     return res.json({ success: true, message: "Logged Out" })
