@@ -17,17 +17,23 @@ const app = express();
 
 await connectDB();
 await connectCloudinary();
-const allowedOrigins = ["https://statuesque-bublanina-e0b5db.netlify.app", "http://localhost:5173"];
-app.get('/', (req, res) => res.send("API is Working"));
-app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
 
 //middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+
+const allowedOrigins = [ "https://new-ecommerce-blue.vercel.app", "https://statuesque-bublanina-e0b5db.netlify.app", "http://localhost:5173"];
+app.get('/', (req, res) => res.send("API is Working"));
+app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
+
+
+
 app.use(cors({origin : allowedOrigins, credentials: true}));
 
-app.use(express.urlencoded({ extended: true }));
+
 
 //api Endpointes
 
