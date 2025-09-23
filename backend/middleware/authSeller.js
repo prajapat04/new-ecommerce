@@ -12,6 +12,7 @@ export const authSeller = async (req, res, next) => {
     // verify JWT
     const decoded = jwt.verify(sellerToken, process.env.JWT_SECRET);
     if(decoded.email === process.env.SELLER_EMAIL){
+      req.seller = decoded;
       next();
     }else{
       return res.json({success: false, message: 'Not Authorized'});

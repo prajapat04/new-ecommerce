@@ -7,11 +7,12 @@ export const authUser = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if(decoded.id){
-      req.userId = decoded.id;
-    }else{
-      return res.json({success: false, message: 'Not Authrized'});
+     if (!decoded?.id) {
+      return res.status(403).json({ success: false, message: "Not Authorized" });
     }
+
+    req.userId = decoded.id;   // for quick access
+    req.user = decoded;        // attach full decoded payload
     next();
   } catch (error) {
     return res.json({ message: error.message, success: false });
