@@ -11,22 +11,27 @@ const Navbar = () => {
   const { user, setUser, setShowUserLogin, cartCount, searchQuery, setSearchQuery, axios } = useContext(AppContext);
 
  const logout = async () => {
-  if (!axios) return toast.error("Axios not ready");
   try {
     const { data } = await axios.get("/api/user/logout", { withCredentials: true });
-    
+
     if (data?.success) {
       toast.success(data.message || "Logged out successfully");
-      setUser(null);
-      navigate("/");
     } else {
       toast.error(data?.message || "Logout failed");
     }
   } catch (error) {
-    console.error(error);
-    toast.error(error.response?.data?.message || error.message || "Something went wrong");
+    if (error.response?.status === 401) {
+      // Session already invalid, still clear user
+      toast.success("Logged out successfully");
+    } else {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  } finally {
+    setUser(null);
+    navigate("/");
   }
 };
+
 useEffect(() => {
   if (searchQuery && searchQuery.length > 0) navigate("/products");
 }, [searchQuery]);
