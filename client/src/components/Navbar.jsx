@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { useNavigate } from 'react-router-dom';
 import { assets } from "../assets/assets";
 import toast from "react-hot-toast";
 const Navbar = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const { user, setUser, navigate, setShowUserLogin, cartCount, searchQuery, setSearchQuery, axios } = useContext(AppContext);
+  const { user, setUser, setShowUserLogin, cartCount, searchQuery, setSearchQuery, axios } = useContext(AppContext);
 
  const logout = async ()=> {
   try {
@@ -23,11 +25,9 @@ const Navbar = () => {
   }
  }
 
- useEffect(()=> {
-   if (searchQuery.length > 0) {
-    navigate("/products");
-  }
- }, [searchQuery]);
+useEffect(() => {
+  if (searchQuery && searchQuery.length > 0) navigate("/products");
+}, [searchQuery]);
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-12 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
 
@@ -53,7 +53,7 @@ const Navbar = () => {
           navigate("/cart");
         }} className="relative cursor-pointer">
           <img src={assets.cart_icon} alt="cart-icon" className="w-5  h-5" />
-          <button className="absolute -top-2 -right-3 text-xs text-white bg-indigo-500 w-[18px] h-[18px] rounded-full">{cartCount()}</button>
+          <button className="absolute -top-2 -right-3 text-xs text-white bg-indigo-500 w-[18px] h-[18px] rounded-full">{cartCount?.()}</button>
         </div>
 
         {user ? (
