@@ -13,7 +13,7 @@ const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
 
   // User States
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState({});
   
   // Seller States
