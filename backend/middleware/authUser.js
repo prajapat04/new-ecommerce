@@ -1,20 +1,27 @@
 import jwt from "jsonwebtoken";
 
-export const authUser = async (req, res, next) => {
-  const { token } = req.cookies;
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized", success: false });
-  }
+export const authUser = (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-     if (!decoded?.id) {
-      return res.status(403).json({ success: false, message: "Not Authorized" });
+    const token = req.cookies?.token;
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Unauthorized: No token" });
     }
 
-    req.userId = decoded.id;   // for quick access
-    req.user = decoded;        // attach full decoded payload
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded?.id) {
+      return res.status(403).json({ success: false, message: "Invalid token" });
+    }
+
+    // Attach user info to request
+    req.userId = decoded.id;
+    req.user = decoded;
+
     next();
   } catch (error) {
-    return res.json({ message: error.message, success: false });
+    console.error("authUser Error:", error.message);
+    return res.status(401).json({ success: false, message: "Unauthorized or expired token" });
   }
-}
+};
