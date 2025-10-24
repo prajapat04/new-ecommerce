@@ -60,7 +60,7 @@ useEffect(() => {
           navigate("/cart");
         }} className="relative cursor-pointer">
           <img src={assets.cart_icon} alt="cart-icon" className="w-5  h-5" />
-          <button className="absolute -top-2 -right-3 text-xs text-white bg-indigo-500 w-[18px] h-[18px] rounded-full">{cartCount?.()}</button>
+          <button className="absolute -top-2 -right-3 text-xs text-white bg-indigo-500 w-[18px] h-[18px] rounded-full"> {cartCount ? cartCount() : 0}</button>
         </div>
 
         {user ? (
@@ -101,7 +101,7 @@ useEffect(() => {
       <div className={`${open ? 'flex' : 'hidden'} absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-20`}>
         <Link to={"/"}>Home</Link>
         <Link to={"/products"}>All Products</Link>
-        <Link to={"/my-orders"}>My Orders</Link>
+        {user && <Link to={"/my-orders"}>My Orders</Link>}
         {user ? (
           <>
             <div className="flex">
