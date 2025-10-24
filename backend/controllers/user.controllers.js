@@ -67,7 +67,7 @@ export const loginUser = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
+      sameSite: isProduction ? "none" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/'
     });
@@ -117,7 +117,7 @@ export const logoutUser = async (req, res) => {
     res.clearCookie('token', {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
+      sameSite: isProduction ? "none" : "Lax",
       path: '/'
     });
     return res.json({ success: true, message: "Logged Out" })
