@@ -118,7 +118,7 @@ const AppContextProvider = ({ children }) => {
   
   // Fetch initial data
   useEffect(() => {
-   fetchUser();
+   setTimeout(() => fetchUser(), 1000);
     fetchSeller();
     fetchProducts();
   },[]);
