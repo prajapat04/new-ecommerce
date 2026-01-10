@@ -19,25 +19,28 @@ await connectDB();
 await connectCloudinary();
 
 
-
-
-
 const allowedOrigins = [ "https://new-ecommerce-blue.vercel.app", "https://statuesque-bublanina-e0b5db.netlify.app", "http://localhost:5173"];
-
-
-
 
 app.use(cors({origin : allowedOrigins, credentials: true}));
 
-app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
-//middlewares
-app.use(express.json());
 app.use(cookieParser());
+//middlewares
+app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks);
+
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+app.get('/', (req, res) => res.send("API is Working"));
+
+
+
+
+
 
 //api Endpointes
 
-app.get('/', (req, res) => res.send("API is Working"));
 app.use("/images", express.static("uploads"));
 app.use("/api/user", userRoutes);
 app.use("/api/seller", sellerRoutes);
