@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 // Axios global config
 // ----------------------------
 axios.defaults.baseURL = "https://new-ecommerce-backend-seven.vercel.app";
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true; // send cookies
 
 export const AppContext = createContext(null);
 
@@ -31,16 +31,57 @@ const AppContextProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user/is-auth");
-      console.log("AUTH CHECK:", data);
-
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems || {});
       }
-      // ❌ else me kuch mat karo, refresh fail = no logout
+      // ❌ refresh fail par bhi user null mat karo
     } catch (error) {
       console.log("Auth check failed:", error.message);
-      // ❌ YAHAN setUser(null) MAT KARO
+      // ❌ user null mat karo
+    }
+  };
+
+  const loginUser = async (email, password) => {
+    try {
+      const { data } = await axios.post("/api/user/login", { email, password });
+      if (data.success) {
+        setUser(data.user);
+        setCartItems(data.user.cartItems || {});
+        toast.success("Login successful");
+        setShowUserLogin(false);
+      } else {
+        toast.error(data.message || "Login failed");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const registerUser = async (name, email, password) => {
+    try {
+      const { data } = await axios.post("/api/user/register", { name, email, password });
+      if (data.success) {
+        setUser(data.user);
+        setCartItems({});
+        toast.success("Registered successfully");
+        setShowUserLogin(false);
+      } else {
+        toast.error(data.message || "Registration failed");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const logoutUser = async () => {
+    try {
+      await axios.post("/api/user/logout");
+      setUser(null);
+      setCartItems({});
+      toast.success("Logged out");
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -141,6 +182,9 @@ const AppContextProvider = ({ children }) => {
         navigate,
         user,
         setUser,
+        loginUser,
+        registerUser,
+        logoutUser,
         isSeller,
         setIsSeller,
         showUserLogin,

@@ -1,31 +1,31 @@
+// controllers/user.controller.js
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const isProduction = process.env.NODE_ENV === "production";
-
+// ----------------------------
+// COOKIE OPTIONS
+// ----------------------------
 const cookieOptions = {
-  httpOnly: true,
-  secure: true,            // 🔴 ALWAYS true in production deploys
-  sameSite: "none",        // 🔴 REQUIRED for Netlify/Vercel
-  path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  httpOnly: true,        // JS access nahi kar sakta
+  secure: true,          // HTTPS mandatory (Vercel / Netlify)
+  sameSite: "none",      // Cross-site cookie allowed
+  path: "/",             // Must include
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
-// -------------------------------
+
+// ----------------------------
 // REGISTER
-// -------------------------------
+// ----------------------------
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
+    if (!name || !email || !password)
       return res.json({ success: false, message: "All fields are required" });
-    }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (existingUser)
       return res.json({ success: false, message: "User already exists" });
-    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashedPassword });
@@ -41,13 +41,13 @@ export const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.log("Register Error:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// -------------------------------
+// ----------------------------
 // LOGIN
-// -------------------------------
+// ----------------------------
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -63,6 +63,7 @@ export const loginUser = async (req, res) => {
       return res.json({ success: false, message: "Invalid email or password" });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
     res.cookie("token", token, cookieOptions);
 
     return res.json({
@@ -72,13 +73,13 @@ export const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.log("Login Error:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// -------------------------------
+// ----------------------------
 // IS AUTH
-// -------------------------------
+// ----------------------------
 export const isAuthUser = async (req, res) => {
   try {
     const token = req.cookies?.token;
@@ -93,22 +94,19 @@ export const isAuthUser = async (req, res) => {
     return res.json({ success: true, user });
   } catch (error) {
     console.log("isAuth Error:", error.message);
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
 
-// -------------------------------
+// ----------------------------
 // LOGOUT
-// -------------------------------
+// ----------------------------
 export const logoutUser = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      ...cookieOptions,
-      maxAge: 0,
-    });
+    res.clearCookie("token", { ...cookieOptions, maxAge: 0 });
     return res.json({ success: true, message: "Logged out" });
   } catch (error) {
     console.log("Logout Error:", error.message);
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
