@@ -24,7 +24,7 @@ await connectCloudinary();
 app.use(
   cors({
     origin: [
-      "https://grocerysujla.netlify.app", // frontend
+      "https://new-ecommerce-blue.vercel.app", // frontend
     ],
     credentials: true,
   })
