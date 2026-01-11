@@ -1,71 +1,60 @@
+// src/context/AppContext.jsx
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-// Ensure axios sends cookies & points to backend
+// ----------------------------
+// Axios global config
+// ----------------------------
+axios.defaults.baseURL = "https://new-ecommerce-backend-seven.vercel.app";
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 export const AppContext = createContext(null);
 
 const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
 
-  // User States
+  // ----------------------------
+  // STATES
+  // ----------------------------
   const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState({});
-  
-  // Seller States
   const [isSeller, setIsSeller] = useState(false);
-
-  //show login  
   const [showUserLogin, setShowUserLogin] = useState(false);
-  
-
-  // Products & Search
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // ----------------------------
+  // USER FUNCTIONS
+  // ----------------------------
+  const fetchUser = async () => {
+    try {
+      const { data } = await axios.get("/api/user/is-auth");
+      console.log("AUTH CHECK:", data);
 
-  
+      if (data.success) {
+        setUser(data.user);
+        setCartItems(data.user.cartItems || {});
+      }
+      // ❌ else me kuch mat karo, refresh fail = no logout
+    } catch (error) {
+      console.log("Auth check failed:", error.message);
+      // ❌ YAHAN setUser(null) MAT KARO
+    }
+  };
 
   // ----------------------------
   // SELLER FUNCTIONS
   // ----------------------------
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get('/api/seller/is-auth');
-      if(data.success){
-        setIsSeller(true)
-      }else{
-        setIsSeller(false)
-      }
-    } catch (error) {
-      setIsSeller(false)
+      const { data } = await axios.get("/api/seller/is-auth");
+      setIsSeller(data.success ? true : false);
+    } catch {
+      setIsSeller(false);
     }
   };
-
-
-    // ----------------------------
-  // USER FUNCTIONS
-  // ----------------------------
- const fetchUser = async () => {
-  try {
-    const { data } = await axios.get("/api/user/is-auth");
-    console.log("AUTH CHECK:", data);
-
-    if (data.success) {
-      setUser(data.user);
-      setCartItems(data.user.cartItems || {});
-    }
-    // ❌ else me kuch mat karo
-  } catch (error) {
-    console.log("Auth check failed:", error.message);
-    // ❌ YAHAN setUser(null) MAT KARO
-  }
-};
-
 
   // ----------------------------
   // PRODUCT FUNCTIONS
@@ -75,7 +64,7 @@ const AppContextProvider = ({ children }) => {
       const { data } = await axios.get("/api/product/list");
       if (data.success) setProducts(data.products);
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
   };
 
@@ -89,12 +78,12 @@ const AppContextProvider = ({ children }) => {
     toast.success("Added to cart");
   };
 
-  const updateCartItem = (itemId, quantity)=>{
-    let cartData = structuredClone(cartItems);
-    cartData[itemId] = quantity;
-    setCartItems(cartData)
-    toast.success("cart Updated")
-  }
+  const updateCartItem = (itemId, quantity) => {
+    const newCart = structuredClone(cartItems);
+    newCart[itemId] = quantity;
+    setCartItems(newCart);
+    toast.success("Cart updated");
+  };
 
   const removeFromCart = (itemId) => {
     const newCart = { ...cartItems };
@@ -108,7 +97,6 @@ const AppContextProvider = ({ children }) => {
 
   const cartCount = () => Object.values(cartItems).reduce((a, b) => a + b, 0);
 
-
   const totalCartAmount = () => {
     let total = 0;
     for (const id in cartItems) {
@@ -118,35 +106,35 @@ const AppContextProvider = ({ children }) => {
     return Math.round(total * 100) / 100;
   };
 
-  
-  // Fetch initial data
+  // ----------------------------
+  // INITIAL DATA FETCH
+  // ----------------------------
   useEffect(() => {
     fetchUser();
     fetchSeller();
     fetchProducts();
-  },[]);
+  }, []);
 
-  // Sync cart with backend whenever user changes it
+  // ----------------------------
+  // SYNC CART WITH BACKEND
+  // ----------------------------
   useEffect(() => {
-  if (!user) return;
+    if (!user) return;
 
-  const updateCart = async () => {
-    try {
-      await axios.post(
-        "/api/cart/update",
-        { cartItems },
-        { withCredentials: true }
-      );
-    } catch (error) {
-      console.log("Cart sync failed");
-    }
-  };
+    const updateCart = async () => {
+      try {
+        await axios.post("/api/cart/update", { cartItems });
+      } catch (error) {
+        console.log("Cart sync failed:", error.message);
+      }
+    };
 
-  updateCart();
-}, [cartItems, user]);
+    updateCart();
+  }, [cartItems, user]);
 
-
-
+  // ----------------------------
+  // CONTEXT PROVIDER
+  // ----------------------------
   return (
     <AppContext.Provider
       value={{
@@ -155,11 +143,11 @@ const AppContextProvider = ({ children }) => {
         setUser,
         isSeller,
         setIsSeller,
-        showUserLogin,     
+        showUserLogin,
         setShowUserLogin,
         products,
         addToCart,
-        updateCartItem, 
+        updateCartItem,
         removeFromCart,
         cartItems,
         searchQuery,
@@ -168,7 +156,7 @@ const AppContextProvider = ({ children }) => {
         cartCount,
         totalCartAmount,
         axios,
-        fetchProducts
+        fetchProducts,
       }}
     >
       {children}
