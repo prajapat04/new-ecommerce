@@ -23,21 +23,12 @@ await connectCloudinary();
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "https://new-ecommerce-blue.vercel.app",
-      ];
-
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: [
+      "https://new-ecommerce-blue.vercel.app", // frontend
+    ],
     credentials: true,
   })
 );
-
 
 app.use(cookieParser());
 //middlewares

@@ -1,22 +1,18 @@
-// controllers/user.controller.js
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// ----------------------------
-// COOKIE OPTIONS
-// ----------------------------
+const isProduction = process.env.NODE_ENV === "production";
+
 const cookieOptions = {
-  httpOnly: true,        // JS access nahi kar sakta
-  secure: true,          // HTTPS mandatory (Vercel / Netlify)
-  sameSite: "none",      // Cross-site cookie allowed
-  path: "/",             // Must include
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  httpOnly: true,
+  secure: isProduction,          // ✅ true only in production
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
-// ----------------------------
-// REGISTER
-// ----------------------------
+// ----------------- REGISTER -----------------
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -45,9 +41,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// ----------------------------
-// LOGIN
-// ----------------------------
+// ----------------- LOGIN -----------------
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -77,30 +71,24 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// ----------------------------
-// IS AUTH
-// ----------------------------
+// ----------------- IS AUTH -----------------
 export const isAuthUser = async (req, res) => {
   try {
     const token = req.cookies?.token;
-    if (!token)
-      return res.json({ success: false, message: "Not authenticated" });
+    if (!token) return res.json({ success: false, message: "Not authenticated" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select("-password");
-    if (!user)
-      return res.json({ success: false, message: "User not found" });
+    if (!user) return res.json({ success: false, message: "User not found" });
 
     return res.json({ success: true, user });
   } catch (error) {
     console.log("isAuth Error:", error.message);
-    return res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: "Token expired or invalid" });
   }
 };
 
-// ----------------------------
-// LOGOUT
-// ----------------------------
+// ----------------- LOGOUT -----------------
 export const logoutUser = async (req, res) => {
   try {
     res.clearCookie("token", { ...cookieOptions, maxAge: 0 });

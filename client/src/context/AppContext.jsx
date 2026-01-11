@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 // Axios global config
 // ----------------------------
 axios.defaults.baseURL = "https://new-ecommerce-backend-seven.vercel.app";
-axios.defaults.withCredentials = true; // send cookies
+axios.defaults.withCredentials = true; // send cookies to backend
 
 export const AppContext = createContext(null);
 
@@ -30,21 +30,20 @@ const AppContextProvider = ({ children }) => {
   // ----------------------------
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get("/api/user/is-auth");
+      const { data } = await axios.get("/api/user/is-auth", { withCredentials: true });
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems || {});
       }
-      // ❌ refresh fail par bhi user null mat karo
     } catch (error) {
       console.log("Auth check failed:", error.message);
-      // ❌ user null mat karo
+      // ❌ Do NOT null user on refresh fail
     }
   };
 
   const loginUser = async (email, password) => {
     try {
-      const { data } = await axios.post("/api/user/login", { email, password });
+      const { data } = await axios.post("/api/user/login", { email, password }, { withCredentials: true });
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems || {});
@@ -60,7 +59,7 @@ const AppContextProvider = ({ children }) => {
 
   const registerUser = async (name, email, password) => {
     try {
-      const { data } = await axios.post("/api/user/register", { name, email, password });
+      const { data } = await axios.post("/api/user/register", { name, email, password }, { withCredentials: true });
       if (data.success) {
         setUser(data.user);
         setCartItems({});
@@ -76,7 +75,7 @@ const AppContextProvider = ({ children }) => {
 
   const logoutUser = async () => {
     try {
-      await axios.post("/api/user/logout");
+      await axios.post("/api/user/logout", {}, { withCredentials: true });
       setUser(null);
       setCartItems({});
       toast.success("Logged out");
@@ -90,7 +89,7 @@ const AppContextProvider = ({ children }) => {
   // ----------------------------
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get("/api/seller/is-auth");
+      const { data } = await axios.get("/api/seller/is-auth", { withCredentials: true });
       setIsSeller(data.success ? true : false);
     } catch {
       setIsSeller(false);
@@ -102,7 +101,7 @@ const AppContextProvider = ({ children }) => {
   // ----------------------------
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get("/api/product/list");
+      const { data } = await axios.get("/api/product/list", { withCredentials: true });
       if (data.success) setProducts(data.products);
     } catch (error) {
       toast.error(error.message);
@@ -164,7 +163,7 @@ const AppContextProvider = ({ children }) => {
 
     const updateCart = async () => {
       try {
-        await axios.post("/api/cart/update", { cartItems });
+        await axios.post("/api/cart/update", { cartItems }, { withCredentials: true });
       } catch (error) {
         console.log("Cart sync failed:", error.message);
       }
