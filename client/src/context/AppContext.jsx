@@ -50,19 +50,22 @@ const AppContextProvider = ({ children }) => {
     // ----------------------------
   // USER FUNCTIONS
   // ----------------------------
-  const fetchUser = async ()=> {
-    try {
-      const { data } = await axios.get("/api/user/is-auth", { withCredentials: true });
-      console.log(data);
-      if (data.success) {
-        setUser(data.user)
-       setCartItems(data.user.cartItems)
-      }
-    } catch (error) {
-      console.log(error.message)
-          setUser(null);
+ const fetchUser = async () => {
+  try {
+    const { data } = await axios.get("/api/user/is-auth");
+    console.log("AUTH CHECK:", data);
+
+    if (data.success) {
+      setUser(data.user);
+      setCartItems(data.user.cartItems || {});
     }
-  };
+    // ❌ else me kuch mat karo
+  } catch (error) {
+    console.log("Auth check failed:", error.message);
+    // ❌ YAHAN setUser(null) MAT KARO
+  }
+};
+
 
   // ----------------------------
   // PRODUCT FUNCTIONS
