@@ -15,13 +15,29 @@ import { connectCloudinary } from './config/cloudinary.js';
 import { stripeWebhooks } from './controllers/order.controller.js';
 const app = express();
 
+app.set("trust proxy", 1);
+
 await connectDB();
 await connectCloudinary();
 
 
-const allowedOrigins = [ "https://new-ecommerce-blue.vercel.app", "https://statuesque-bublanina-e0b5db.netlify.app", "http://localhost:5173"];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "https://new-ecommerce-blue.vercel.app",
+      ];
 
-app.use(cors({origin : allowedOrigins, credentials: true}));
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 
 app.use(cookieParser());
 //middlewares
