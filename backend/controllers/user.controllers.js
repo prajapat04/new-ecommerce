@@ -6,12 +6,11 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const cookieOptions = {
   httpOnly: true,
-  secure: isProduction, // only HTTPS in production
-  sameSite: isProduction ? "none" : "lax", // lowercase!
-  path: "/", // must include for clearCookie consistency
+  secure: true,            // 🔴 ALWAYS true in production deploys
+  sameSite: "none",        // 🔴 REQUIRED for Netlify/Vercel
+  path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
-
 // -------------------------------
 // REGISTER
 // -------------------------------

@@ -35,7 +35,7 @@ const AppContextProvider = ({ children }) => {
   // ----------------------------
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get('/api/seller/is-auth', { withCredentials: true });
+      const { data } = await axios.get('/api/seller/is-auth');
       if(data.success){
         setIsSeller(true)
       }else{
@@ -118,27 +118,30 @@ const AppContextProvider = ({ children }) => {
   
   // Fetch initial data
   useEffect(() => {
-   setTimeout(() => fetchUser(), 1000);
+    fetchUser();
     fetchSeller();
     fetchProducts();
   },[]);
 
   // Sync cart with backend whenever user changes it
   useEffect(() => {
-    const updateCart = async () => {  
-      try {
-       const {data} = await axios.post("/api/cart/update",  {cartItems}, { withCredentials: true });
-       if(!data.success){
-        toast.error(data.message)
-       }
-      } catch (error) {
-        toast.error(error.message);
-      }
+  if (!user) return;
+
+  const updateCart = async () => {
+    try {
+      await axios.post(
+        "/api/cart/update",
+        { cartItems },
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.log("Cart sync failed");
     }
-    if(user){
-      updateCart();
-    }
-  }, [cartItems]);
+  };
+
+  updateCart();
+}, [cartItems, user]);
+
 
 
   return (
