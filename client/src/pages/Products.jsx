@@ -16,9 +16,11 @@ const Products = () => {
     }
   }, [products, searchQuery]);
   return (
-    <div className='mt-16'>
-      <h1 className='text-3xl lg:text-4xl font-medium'>All Products</h1>
-      <div className='my-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-center justify-center'>
+    <div className='mt-8 md:mt-12 bg-white rounded-3xl p-6 md:p-10 border border-gray-100 shadow-sm'>
+      <h1 className='text-2xl md:text-4xl font-extrabold text-gray-900'>All Products</h1>
+      <p className='text-gray-500 mt-2 text-sm md:text-base'>Discover our fresh and healthy products.</p>
+
+      <div className='my-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6'>
         {
           filterdProducts.filter((product) => product.inStock).map((product, index) => (
             <ProductCart key={index} product={product} />

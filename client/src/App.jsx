@@ -24,12 +24,12 @@ function App() {
   const isSellerPath = useLocation().pathname.includes("seller");
 
   return (
-    <>
+    <div className="overflow-x-hidden min-h-screen flex flex-col">
       {isSellerPath ? null : <Navbar />}
       {
         showUserLogin ? <Auth /> : null}
       <Toaster />
-      <div className="px-6 md:px-16 lg:px-24 xl:px-32">
+      <div className="px-4 md:px-12 lg:px-24 xl:px-32">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -44,14 +44,14 @@ function App() {
             path="/seller"
             element={isSeller ? <SellerLayout /> : <SellerLogin />}
           >
-            <Route index element={isSeller ? <AddProduct/> : null} />
-            <Route path="product-list" element={isSeller ? <ProductList/> : null} />
+            <Route index element={isSeller ? <AddProduct /> : null} />
+            <Route path="product-list" element={isSeller ? <ProductList /> : null} />
             <Route path="orders" element={isSeller ? <Orders /> : null} />
           </Route>
         </Routes>
       </div>
       {isSellerPath ? null : <Footer />}
-    </>
+    </div>
   );
 };
 

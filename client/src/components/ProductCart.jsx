@@ -4,47 +4,76 @@ import { assets } from '../assets/assets'
 
 const ProductCart = ({ product }) => {
   const { navigate, addToCart, cartItems, removeFromCart } = useContext(AppContext)
-  return product && (
-    <div onClick={() => {
-          navigate(
-            `/product/${product.category.toLowerCase()}/${product?._id}`
-          );
-          window.scrollTo({ top: 0, behavior: "smooth" });
+  const discount = product.price > product.offerPrice ? Math.round(((product.price - product.offerPrice) / product.price) * 100) : 0;
 
-        }}
-     className="border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full">
-      <div className="group cursor-pointer flex items-center justify-center px-2">
-        <img className="group-hover:scale-105 transition max-w-26 md:max-w-36"
-         src={product.image[0]} alt={product.name} />
+  return product && (
+    <div
+      onClick={() => {
+        navigate(`/product/${product.category.toLowerCase()}/${product?._id}`);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+      className="group relative border border-gray-100 rounded-2xl p-4 bg-white hover:shadow-xl hover:border-orange-100 transition-all duration-300 cursor-pointer flex flex-col gap-3 h-full"
+    >
+      {/* Sale Badge */}
+      {discount > 0 && (
+        <span className="absolute top-3 left-3 bg-orange-600 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-sm">
+          -{discount}% OFF
+        </span>
+      )}
+
+      {/* Image Container */}
+      <div className="aspect-square flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden group-hover:bg-orange-50/30 transition-colors">
+        <img
+          className="w-4/5 h-4/5 object-contain group-hover:scale-110 transition-transform duration-500"
+          src={product.image[0]}
+          alt={product.name}
+        />
       </div>
-      <div className="text-gray-500/60 text-sm">
-        <p>{product.category}</p>
-        <p className="text-gray-700 font-medium text-lg truncate w-full">{product.name}</p>
-        <div className='flex items-center gap-0.5'>
-          {Array(5).fill('').map((_, i) => (<img key={i} src={i < 4 ? assets.star_icon : assets.star_dull_icon} alt="rating" className='w-3 md:w-3.5' />))}
-          <p>(4)</p>
-        </div>
-        <div className="flex items-end justify-between mt-3">
-          <p className="md:text-xl text-base font-medium text-indigo-500">
-            ${product.offerPrice} <span className="text-gray-500/60 md:text-sm text-xs line-through">${product.price}</span>
-          </p>
-          <div className="text-indigo-500"
-          onClick={(e)=> e.stopPropagation()}
-          >
+
+      {/* Content */}
+      <div className="flex flex-col flex-grow gap-1">
+        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">{product.category}</p>
+        <h3 className="text-gray-800 font-semibold text-base line-clamp-2 leading-tight h-10 group-hover:text-orange-600 transition-colors">
+          {product.name}
+        </h3>
+
+        {/* Rating */}
+
+        {/* Footer: Price & Action */}
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-orange-600">${product.offerPrice}</span>
+            {discount > 0 && (
+              <span className="text-xs text-gray-400 line-through">${product.price}</span>
+            )}
+          </div>
+
+          <div onClick={(e) => e.stopPropagation()}>
             {!cartItems?.[product._id] ? (
-              <button className="flex items-center justify-center gap-1 bg-indigo-100 border border-indigo-300 md:w-[80px] w-[64px] h-[34px] rounded text-indigo-600 font-medium" onClick={() => addToCart(product._id)} >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0" stroke="#615fff" strokeLinecap="round" strokeLinejoin="round" />
+              <button
+                className="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-xl transition-all shadow-md active:scale-95 group/btn"
+                onClick={() => addToCart(product._id)}
+                aria-label="Add to cart"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5v14" />
                 </svg>
-                Add
               </button>
             ) : (
-              <div className="flex items-center justify-center gap-2 md:w-20 w-16 h-[34px] bg-indigo-500/25 rounded select-none">
-                <button onClick={() => removeFromCart(product._id)} className="cursor-pointer text-md px-2 h-full" >
+              <div className="flex items-center bg-orange-50 rounded-xl border border-orange-100 p-1 shadow-sm">
+                <button
+                  onClick={() => removeFromCart(product._id)}
+                  className="w-7 h-7 flex items-center justify-center text-orange-600 hover:bg-white rounded-lg transition active:scale-90 font-bold"
+                >
                   -
                 </button>
-                <span className="w-5 text-center">{cartItems[product._id]}</span>
-                <button onClick={() => addToCart(product._id)} className="cursor-pointer text-md px-2 h-full" >
+                <span className="w-6 text-center text-sm font-bold text-orange-700">
+                  {cartItems[product._id]}
+                </span>
+                <button
+                  onClick={() => addToCart(product._id)}
+                  className="w-7 h-7 flex items-center justify-center text-orange-600 hover:bg-white rounded-lg transition active:scale-90 font-bold"
+                >
                   +
                 </button>
               </div>
@@ -53,7 +82,7 @@ const ProductCart = ({ product }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default ProductCart
