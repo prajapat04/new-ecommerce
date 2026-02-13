@@ -13,11 +13,13 @@ export const sellerLogin = async (req, res) => {
     // Generate JWT
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+    const isProduction = process.env.NODE_ENV?.trim() === "production" || process.env.VERCEL === "1";
+
     // ✅ Set cookie properly for cross-origin (Vercel)
     res.cookie("sellerToken", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
