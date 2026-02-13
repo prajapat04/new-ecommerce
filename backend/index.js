@@ -24,7 +24,7 @@ await connectCloudinary();
 app.use(
   cors({
     origin: [
-      "https://new-ecommerce-blue.vercel.app", // frontend
+      "https://new-ecommerce-blue.vercel.app",  "http://localhost:5173"// frontend
     ],
     credentials: true,
   })
