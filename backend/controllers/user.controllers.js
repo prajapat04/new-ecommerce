@@ -2,12 +2,12 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV?.trim() === "production" || process.env.VERCEL === "1";
 
 const cookieOptions = {
   httpOnly: true,
-  secure: isProduction,          // ✅ true only in production
-  sameSite: isProduction ? "none" : "lax",
+  secure: true, // Use secure even in dev if troubleshooting, but true is mandatory for sameSite: 'none'
+  sameSite: "none", // Required for cross-site cookies between Vercel apps
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

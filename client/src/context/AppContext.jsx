@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 // ----------------------------
 // Axios global config
 // ----------------------------
-axios.defaults.baseURL = "https://new-ecommerce-backend-seven.vercel.app";
+axios.defaults.baseURL = "https://new-ecommerce-backend-seven.vercel.app"; // backend URL
 axios.defaults.withCredentials = true; // send cookies to backend
 
 export const AppContext = createContext(null);
